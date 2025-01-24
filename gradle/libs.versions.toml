@@ -1,0 +1,15 @@
+[versions]
+kotlin = "2.0.21"
+coroutines = "1.8.1"
+kotlin-serialization = "1.7.3"
+kotlin-atomic = "0.26.0"
+
+[libraries]
+jetbrains-kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlin-serialization" }
+jetbrains-kotlin-atomic = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "kotlin-atomic" }
+jetbrains-kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin"}
+jetbrains-kotlin-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+
+[plugins]
+kotlinMultiPlatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
