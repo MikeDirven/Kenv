@@ -5,13 +5,28 @@ plugins {
 }
 
 group = "nl.icsvertex"
-version = "1.0.0.0"
+version = "1.0.0.10"
+
+val user: String = System.getenv("GITHUB_USER")
+val key: String = System.getenv("GITHUB_KEY")
 
 repositories {
     mavenCentral()
 }
 
+publishing {
+    repositories {
+        mavenLocal()
+        maven("https://maven.pkg.github.com/ICS-Vertex/kotlin_env") {
+            name = "ICSVERTEX-Github"
 
+            credentials {
+                username = user
+                password = key
+            }
+        }
+    }
+}
 
 kotlin {
     jvmToolchain(17)

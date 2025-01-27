@@ -37,11 +37,4 @@ object DefaultSerializers {
             return Json.decodeFromJsonElement<PropertyValue<R>>(value)
         }
     }
-
-    init {
-        // Register default serializers
-        EnvProperty.registerSerializer<Any>(DefaultSerializer)
-        EnvProperty.registerSerializer<String>(StringSerializer)
-        EnvProperty.registerSerializer<Int>(IntSerializer)
-    }
 }

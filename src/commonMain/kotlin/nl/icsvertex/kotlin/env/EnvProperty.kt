@@ -11,11 +11,11 @@ expect class EnvProperty<R: Any>(
     name: String?,
     default: R?
 ) {
-    operator fun getValue(thisRef: Any?, property: KProperty<*>): R
+//    operator fun getValue(thisRef: Any?, property: KProperty<*>): R
 
     companion object {
-        internal val serializers: AtomicMap<KClass<*>, Serializer>
-        internal val properties: AtomicMap<String, String>
+        val serializers: AtomicMap<KClass<*>, Serializer>
+        val properties: AtomicMap<String, String>
 
         fun registerSerializer(kClass: KClass<*>, serializer: Serializer)
 

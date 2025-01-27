@@ -8,11 +8,15 @@ class AtomicMap<K, V>(
     }
 
     fun getOrDefault(key: K, defaultValue: V): V {
-        return getValue()[key]?: defaultValue
+        return getValue()[key] ?: defaultValue
     }
 
     fun getOrNull(key: K): V? {
-        return getValue()[key]
+        return try {
+            getValue()[key]
+        } catch (e: Exception) {
+            null
+        }
     }
 
     fun put(key: K, value: V) {
@@ -57,12 +61,12 @@ class AtomicMap<K, V>(
         )
     }
 
-    fun removeAll(entries: List<Map.Entry<K, V>>) {
-        val currentValue = getValue()
-        setValue(
-            currentValue.filter { !entries.contains(it) }
-        )
-    }
+//    fun removeAll(entries: List<Map.Entry<K, V>>) {
+//        val currentValue = getValue()
+//        setValue(
+//            currentValue.filter { !entries.contains(it) }
+//        )
+//    }
 
     fun containsKey(key: K): Boolean {
         return getValue().containsKey(key)
