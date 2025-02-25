@@ -14,13 +14,7 @@ expect class EnvProperty<R: Any>(
 //    operator fun getValue(thisRef: Any?, property: KProperty<*>): R
 
     companion object {
-        val serializers: AtomicMap<KClass<*>, Serializer>
         val properties: AtomicMap<String, String>
-
-        fun registerSerializer(kClass: KClass<*>, serializer: Serializer)
-
-        inline fun <reified T> registerSerializer(serializer: Serializer)
-
         internal fun readEnvironment()
 
         inline operator fun <reified R: Any> invoke(name: String?, default: R? = null) : EnvProperty<R>
