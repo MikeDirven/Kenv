@@ -31,17 +31,15 @@ inline operator fun <reified R : Any> EnvProperty<R>.getValue(thisRef: Any?, pro
                     put("value", it)
                 }
             }
-        }
+        }.ifEmpty { null }
     } catch (e: Exception){
         null
     }
 
     // Try to deserialize the system property
-    if(envProperty != null) try {
+    if(envProperty?.get("value") != null) try {
         return defaultJsonSerializer.decodeFromJsonElement<PropertyValue<R>>(envProperty).value
-    } catch (e: Exception){
-        e.printStackTrace()
-    }
+    } catch (e: Exception) {}
 
     return default
         ?: throw PropertyNotFoundException(

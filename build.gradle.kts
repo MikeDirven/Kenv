@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "nl.icsvertex"
-version = "1.0.0.21"
+version = "1.0.0.24"
 
 val user: String = System.getenv("GITHUB_USER")
 val key: String = System.getenv("GITHUB_KEY")
@@ -29,13 +29,12 @@ publishing {
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 
     jvm {
         mavenPublication {
             artifactId = "kotlin-env-jvm"
         }
-        withJava()
     }
 
     js {

@@ -26,17 +26,25 @@ inline operator fun <reified R: Any> EnvProperty<R>.getValue(thisRef: Any?, prop
     val systemProperty: JsonObject? = try {
         buildJsonObject {
             nameFromAnnotation?.also {
-                put("value", System.getenv(it) ?: defaultFromAnnotation)
+                System.getenv(it)?.let {
+                    put("value", it)
+                }
             } ?: property.name.let {
-                put("value", System.getenv(it) ?: defaultFromAnnotation)
+                System.getenv(it)?.let {
+                    put("value", it)
+                }
             }
             listNameFromAnnotation?.let {
-                put("value", System.getenv(it) ?: defaultFromAnnotation)
+                System.getenv(it)?.let {
+                    put("value", it)
+                }
             }
             name?.let {
-                put("value", System.getenv(it) ?: defaultFromAnnotation)
+                System.getenv(it)?.let {
+                    put("value", it)
+                }
             }
-        }
+        }.ifEmpty { null }
     } catch (e: Exception) {
         null
     }
@@ -54,22 +62,28 @@ inline operator fun <reified R: Any> EnvProperty<R>.getValue(thisRef: Any?, prop
     val configProperty: JsonObject? = try {
         buildJsonObject {
             nameFromAnnotation?.also { property ->
-                put("value", properties.getOrNull(property) ?: defaultFromAnnotation)
+                properties.getOrNull(property)?.let {
+                    put("value", it)
+                }
             } ?: property.name.let { property ->
-                put("value", properties.getOrNull(property) ?: defaultFromAnnotation)
+                properties.getOrNull(property)?.let {
+                    put("value", it)
+                }
             }
             listNameFromAnnotation?.let { property ->
-                put(
-                    "value",
-                    JsonArray(
-                        (properties.getOrNull(property) ?: defaultFromAnnotation)?.split(",")!!
-                            .map { JsonPrimitive(it.trim()) }
+                (properties.getOrNull(property) ?: defaultFromAnnotation)?.let {
+                    put(
+                        "value",
+                        JsonArray(
+                            it.split(",").map { JsonPrimitive(it.trim()) }
+                        )
                     )
-
-                )
+                }
             }
             name?.let { property ->
-                put("value", properties.getOrNull(property) ?: defaultFromAnnotation)
+                properties.getOrNull(property)?.let {
+                    put("value", it)
+                }
             }
         }
     } catch (e: Exception) {
@@ -77,10 +91,17 @@ inline operator fun <reified R: Any> EnvProperty<R>.getValue(thisRef: Any?, prop
     }
 
     // Try to deserialize the environment file property
-    if (configProperty != null) try {
+    if (configProperty?.get("value") != null) try {
         return defaultJsonSerializer.decodeFromJsonElement<PropertyValue<R>>(configProperty).value
-    } catch (e: Exception) {
-        e.printStackTrace()
+    } catch (e: Exception) {}
+
+    // Last resort try default from annotation
+    defaultFromAnnotation?.let {
+        return defaultJsonSerializer.decodeFromJsonElement<PropertyValue<R>>(
+            buildJsonObject {
+                put("value", it)
+            }
+        ).value
     }
 
     return default ?: throw PropertyNotFoundException(
