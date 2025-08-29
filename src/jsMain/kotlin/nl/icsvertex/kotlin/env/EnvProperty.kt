@@ -63,14 +63,19 @@ actual class EnvProperty<R: Any> actual constructor(
 
         @OptIn(ExperimentalSerializationApi::class)
         internal actual fun readEnvironment() = try {
+            console.log("Reading environment variables...")
             val json = defaultJsonSerializer.decodeFromDynamic<JsonObject>(window.asDynamic().environment)
             json.forEach {
                 val key = it.key
                 val value = it.value.jsonPrimitive.content
 
                 properties.put(key to value)
+
+                console.log("Loaded environment property: $key -> $value")
             }
+
             window.asDynamic().environment = null
+            console.log("Loaded ${properties.getValue().size} environment properties")
         } catch (e: Exception) {
             e.printStackTrace()
             console.log("Unable to serialize environment object!")

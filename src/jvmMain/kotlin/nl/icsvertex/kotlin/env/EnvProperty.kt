@@ -126,6 +126,7 @@ actual class EnvProperty<R: Any> actual constructor(
         actual fun readEnvironment() {
             // Get ini file
             try {
+                println("Loading environment properties from file: environment.ini")
                 File("environment.ini" ).let { iniFile ->
                     Properties().apply {
                         iniFile.inputStream().use {
@@ -133,10 +134,14 @@ actual class EnvProperty<R: Any> actual constructor(
                         }
 
                         properties.putAll(
-                            this.entries.map { Pair(it.key.toString(), it.value.toString()) }
+                            this.entries.map {
+                                println("Loading property: ${it.key} = ${it.value}")
+                                Pair(it.key.toString(), it.value.toString())
+                            }
                         )
                     }
                 }
+                println("Loaded ${properties.get().size} environment properties")
             } catch (e: Exception) {
                 null
             }
