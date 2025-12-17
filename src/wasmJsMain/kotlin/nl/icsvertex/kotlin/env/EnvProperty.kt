@@ -1,19 +1,18 @@
 package nl.icsvertex.kotlin.env
 
-import kotlinx.browser.window
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.*
 import nl.icsvertex.kotlin.env.EnvProperty.Companion.properties
 import nl.icsvertex.kotlin.env.atomic.AtomicMap
 import nl.icsvertex.kotlin.env.classes.PropertyValue
 import nl.icsvertex.kotlin.env.exceptions.PropertyNotFoundException
-import nl.icsvertex.kotlin.env.extensions.callableName
 import nl.icsvertex.kotlin.env.serializers.defaultJsonSerializer
 import nl.icsvertex.kotlin.env.utils.asArray
 import nl.icsvertex.kotlin.env.utils.asObject
 import nl.icsvertex.kotlin.env.utils.asPrimitive
 import nl.icsvertex.kotlin.env.utils.isArray
 import nl.icsvertex.kotlin.env.utils.isObject
+import nl.icsvertex.kotlin.env.window.Window
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
@@ -30,17 +29,8 @@ actual inline operator fun <reified R : Any> EnvProperty<R>.getValue(thisRef: An
                     }?: put("value", propertyValue)
                 }
             }
-            if(property.name.isNotBlank()) {
+            if(property.name.isBlank()) {
                 properties.getOrNull(property.name)?.let { propertyValue ->
-                    propertyValue.isObject()?.let { propertyObject ->
-                        put("value", propertyObject)
-                    } ?: propertyValue.isArray()?.let { propertyArray ->
-                        put("value", propertyArray)
-                    } ?: put("value", propertyValue)
-                }
-            }
-            property.callableName.let {
-                properties.getOrNull(it)?.let { propertyValue ->
                     propertyValue.isObject()?.let { propertyObject ->
                         put("value", propertyObject)
                     } ?: propertyValue.isArray()?.let { propertyArray ->
@@ -56,14 +46,11 @@ actual inline operator fun <reified R : Any> EnvProperty<R>.getValue(thisRef: An
     // Try to deserialize the system property
     if(envProperty?.get("value") != null) try {
         return defaultJsonSerializer.decodeFromJsonElement<PropertyValue<R>>(envProperty).value
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
+    } catch (e: Exception) {}
 
-    return default
-        ?: throw PropertyNotFoundException(
-            name ?: property.name
-        )
+    return default ?: throw PropertyNotFoundException(
+        name ?: property.name
+    )
 }
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
@@ -81,27 +68,29 @@ actual class EnvProperty<R: Any> actual constructor(
             if(properties.isEmpty) readEnvironment()
         }
 
+
         @OptIn(ExperimentalSerializationApi::class)
         internal actual fun readEnvironment(path: String?) = try {
-            console.log("Reading environment variables...")
-            val json = defaultJsonSerializer.decodeFromDynamic<JsonObject>(window.asDynamic().environment)
+            println("Reading environment variables...")
+            val json = defaultJsonSerializer.decodeFromString<JsonObject>(Window.environment)
+
             json.forEach { (key, value) ->
                 val key = key
                 val value = value.asPrimitive()
                     ?: value.asObject()
                     ?: value.asArray()
 
-                value?.let { loadedValue ->
-                    properties.put(key to loadedValue)
+                value?.let {
+                    properties.put(key to it)
                     println("Loaded environment property: $key -> $value")
                 } ?: println("Failed to load environment property: $key -> $value")
             }
 
-            window.asDynamic().environment = null
-            console.log("Loaded ${properties.getValue().size} environment properties")
+            println("Loaded ${properties.getValue().size} environment properties")
         } catch (e: Exception) {
             e.printStackTrace()
-            console.log("Unable to serialize environment object!")
+            println("Unable to serialize environment object!")
+            println("Current environment string: ${Window.environment}")
         }
 
         actual inline operator fun <reified R: Any> invoke(name: String?, default: R?) : EnvProperty<R> {

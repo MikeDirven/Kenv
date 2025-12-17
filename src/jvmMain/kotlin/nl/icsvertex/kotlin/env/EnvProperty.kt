@@ -17,7 +17,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.findAnnotation
 
-inline operator fun <reified R: Any> EnvProperty<R>.getValue(thisRef: Any?, property: KProperty<*>): R {
+actual inline operator fun <reified R: Any> EnvProperty<R>.getValue(thisRef: Any?, property: KProperty<*>): R {
     val nameFromAnnotation = property.findAnnotation<EnvironmentProperty>()?.name
     val listNameFromAnnotation = property.findAnnotation<EnvironmentListProperty>()?.name
     val defaultFromAnnotation = property.findAnnotation<EnvironmentDefault>()?.value
@@ -116,6 +116,7 @@ actual class EnvProperty<R: Any> actual constructor(
     val default: R?
 ) {
     actual companion object {
+        actual const val ENV_FILE_PROPERTY = "ENV_FILE"
         actual val properties: AtomicMap<String, String> = AtomicMap()
 
         init {
@@ -123,27 +124,32 @@ actual class EnvProperty<R: Any> actual constructor(
             if(properties.isEmpty) readEnvironment()
         }
 
-        actual fun readEnvironment() {
+        actual fun readEnvironment(path: String?) {
             // Get ini file
             try {
-                println("Loading environment properties from file: environment.ini")
-                File("environment.ini" ).let { iniFile ->
+                File(path ?: "environment.ini" ).let { iniFile ->
                     Properties().apply {
                         iniFile.inputStream().use {
                             this.load(it.reader(Charsets.UTF_8))
                         }
 
+                        this.entries.firstOrNull { (property, value) ->
+                            property == ENV_FILE_PROPERTY && value?.toString()?.isNotBlank() ?: false
+                        }?.let { readEnvironment(it.value.toString()) }
+
+                        println("Loading environment properties from file: ${path ?: "environment.ini" }")
+
                         properties.putAll(
-                            this.entries.map {
-                                println("Loading property: ${it.key} = ${it.value}")
-                                Pair(it.key.toString(), it.value.toString())
+                            this.entries.filter { it.key != ENV_FILE_PROPERTY }.map { (property, value) ->
+                                println("Loading property: ${property} = ${value}")
+                                Pair(property.toString(), value.toString())
                             }
                         )
                     }
                 }
                 println("Loaded ${properties.get().size} environment properties")
             } catch (e: Exception) {
-                null
+                e.printStackTrace()
             }
         }
 

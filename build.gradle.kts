@@ -1,3 +1,7 @@
+@file:OptIn(ExperimentalWasmDsl::class)
+
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
+
 plugins {
     alias(libs.plugins.kotlinMultiPlatform)
     alias(libs.plugins.kotlinSerialization)
@@ -5,7 +9,7 @@ plugins {
 }
 
 group = "nl.icsvertex"
-version = "1.0.0.25"
+version = "1.0.0.40"
 
 val user: String = System.getenv("GITHUB_USER")
 val key: String = System.getenv("GITHUB_KEY")
@@ -45,6 +49,10 @@ kotlin {
             binaries.library()
             generateTypeScriptDefinitions()
         }
+    }
+
+    wasmJs {
+        binaries.library()
     }
 
     sourceSets {
