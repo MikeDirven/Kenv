@@ -13,6 +13,7 @@ import nl.icsvertex.kotlin.env.utils.asPrimitive
 import nl.icsvertex.kotlin.env.utils.isArray
 import nl.icsvertex.kotlin.env.utils.isObject
 import nl.icsvertex.kotlin.env.window.Window
+import kotlin.js.unsafeCast
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
@@ -69,19 +70,18 @@ actual class EnvProperty<R: Any> actual constructor(
         }
 
 
-        @OptIn(ExperimentalSerializationApi::class)
+        @OptIn(ExperimentalSerializationApi::class, ExperimentalWasmJsInterop::class)
         internal actual fun readEnvironment(path: String?) = try {
             println("Reading environment variables...")
-            val json = defaultJsonSerializer.decodeFromString<JsonObject>(Window.environment)
+            val environmentObject = Window.environment
+            val resultMap = mutableMapOf<String, String>()
 
-            json.forEach { (key, value) ->
-                val key = key
-                val value = value.asPrimitive()
-                    ?: value.asObject()
-                    ?: value.asArray()
-
+            // 1. Get all the keys from the JavaScript object.
+            val keys: Array<JsString> = getObjectKeys(environmentObject).toArray()
+            keys.forEach { key ->
+                val value = getProperty(environmentObject, key)
                 value?.let {
-                    properties.put(key to it)
+                    properties.put(key.toString() to it.toString())
                     println("Loaded environment property: $key -> $value")
                 } ?: println("Failed to load environment property: $key -> $value")
             }
@@ -102,3 +102,11 @@ actual class EnvProperty<R: Any> actual constructor(
         }
     }
 }
+
+@JsFun("Object.keys")
+@OptIn(ExperimentalWasmJsInterop::class)
+private external fun getObjectKeys(obj: JsAny): JsArray<JsString>
+
+@JsFun("(obj, key) => obj[key]")
+@OptIn(ExperimentalWasmJsInterop::class)
+private external fun getProperty(obj: JsAny, key: JsString): JsAny?

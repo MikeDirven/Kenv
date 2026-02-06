@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "nl.icsvertex"
-version = "1.0.0.40"
+version = "1.0.0.41"
 
 val user: String = System.getenv("GITHUB_USER")
 val key: String = System.getenv("GITHUB_KEY")
