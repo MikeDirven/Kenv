@@ -25,7 +25,7 @@ dependencies {
 You can use the `EnvProperty` delegate to access environment variables in a type-safe manner. Here's an example of how to use it:
 
 ```kotlin
-import io.github.mikedirven.atomic.EnvProperty
+import io.github.mikedirven.EnvProperty
 
 val myVar: String by EnvProperty()
 val anotherVar: Int by EnvProperty(name = "CUSTOM_VAR", default = 42)
@@ -42,7 +42,7 @@ Kenv provides a set of annotations that can be used to customize the behavior of
 The `@EnvironmentProperty` annotation allows you to specify a custom name for the environment variable that a property is mapped to.
 
 ```kotlin
-import io.github.mikedirven.atomic.annotations.EnvironmentProperty
+import io.github.mikedirven.annotations.EnvironmentProperty
 
 @EnvironmentProperty("CUSTOM_VAR")
 val myVar: String by EnvProperty()
@@ -53,7 +53,7 @@ val myVar: String by EnvProperty()
 The `@EnvironmentDefault` annotation allows you to specify a default value for a property.
 
 ```kotlin
-import io.github.mikedirven.atomic.annotations.EnvironmentDefault
+import io.github.mikedirven.annotations.EnvironmentDefault
 
 @EnvironmentDefault("default value")
 val myVar: String by EnvProperty()
@@ -64,7 +64,7 @@ val myVar: String by EnvProperty()
 The `@EnvironmentDirectory` annotation allows you to specify a directory to search for environment files.
 
 ```kotlin
-import io.github.mikedirven.atomic.annotations.EnvironmentDirectory
+import io.github.mikedirven.annotations.EnvironmentDirectory
 
 @EnvironmentDirectory("/path/to/env/files")
 val myVar: String by EnvProperty()
@@ -75,7 +75,7 @@ val myVar: String by EnvProperty()
 The `@EnvironmentListProperty` annotation allows you to map a property to a list of values from an environment variable.
 
 ```kotlin
-import io.github.mikedirven.atomic.annotations.EnvironmentListProperty
+import io.github.mikedirven.annotations.EnvironmentListProperty
 
 @EnvironmentListProperty("MY_LIST")
 val myList: List<String> by EnvProperty()
