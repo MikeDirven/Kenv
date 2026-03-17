@@ -8,11 +8,8 @@ plugins {
     id("maven-publish")
 }
 
-group = "nl.icsvertex"
-version = "1.0.0.41"
-
-val user: String = System.getenv("GITHUB_USER")
-val key: String = System.getenv("GITHUB_KEY")
+group = "io.github.mikedirven"
+version = "1.0.0.0"
 
 repositories {
     mavenCentral()
@@ -21,12 +18,12 @@ repositories {
 publishing {
     repositories {
         mavenLocal()
-        maven("https://maven.pkg.github.com/ICS-Vertex/kotlin_env") {
-            name = "ICSVERTEX-Github"
+        maven("https://maven.pkg.github.com/MikeDirven/Kenv") {
+            name = "Github_repository"
 
             credentials {
-                username = user
-                password = key
+                username = System.getenv("GITHUB_USER")
+                password = System.getenv("GITHUB_KEY") ?: System.getenv("GITHUB_PASS")
             }
         }
     }
@@ -37,13 +34,13 @@ kotlin {
 
     jvm {
         mavenPublication {
-            artifactId = "kotlin-env-jvm"
+            artifactId = "kenv-jvm"
         }
     }
 
     js {
         mavenPublication {
-            artifactId = "kotlin-env-js"
+            artifactId = "kenv-js"
         }
         browser {
             binaries.library()
@@ -52,6 +49,9 @@ kotlin {
     }
 
     wasmJs {
+        mavenPublication {
+            artifactId = "kenv-wasm-js"
+        }
         binaries.library()
     }
 
