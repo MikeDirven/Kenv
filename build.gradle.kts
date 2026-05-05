@@ -8,7 +8,7 @@ plugins {
     id("maven-publish")
 }
 
-group = "io.github.mikedirven"
+group = "io.github.MikeDirven"
 version = "1.0.0.0"
 
 repositories {
@@ -33,26 +33,16 @@ kotlin {
     jvmToolchain(21)
 
     jvm {
-        mavenPublication {
-            artifactId = "kenv-jvm"
-        }
     }
 
     js {
-        mavenPublication {
-            artifactId = "kenv-js"
-        }
         browser {
-            binaries.library()
             generateTypeScriptDefinitions()
         }
     }
 
     wasmJs {
-        mavenPublication {
-            artifactId = "kenv-wasm-js"
-        }
-        binaries.library()
+        browser()
     }
 
     sourceSets {

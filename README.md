@@ -13,6 +13,10 @@ Kenv is a Kotlin Multiplatform library that provides a convenient and type-safe 
 To use Kenv in your project, add the following dependency to your `build.gradle.kts` file:
 
 ```kotlin
+repositories {
+    maven("https://maven.pkg.github.com/MikeDirven/*")
+}
+
 dependencies {
     implementation("io.github.mikedirven:kenv:1.0.0.0")
 }

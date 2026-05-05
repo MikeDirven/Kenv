@@ -1,8 +1,8 @@
 [versions]
-kotlin = "2.2.20"
-coroutines = "1.8.1"
-kotlin-serialization = "1.7.3"
-kotlin-atomic = "0.26.0"
+kotlin = "2.3.21"
+coroutines = "1.10.0"
+kotlin-serialization = "1.11.0"
+kotlin-atomic = "0.32.1"
 
 [libraries]
 jetbrains-kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlin-serialization" }

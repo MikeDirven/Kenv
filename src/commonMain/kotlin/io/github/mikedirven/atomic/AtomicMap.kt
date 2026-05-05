@@ -2,7 +2,7 @@ package io.github.mikedirven.atomic
 
 class AtomicMap<K, V>(
     value: Map<K, V>? = null
-) : AtomicRef<Map<K, V>>(value ?: mapOf()) {
+) : AtomicRef<Map<K, V>>(value ?: mapOf()), Iterable<Map.Entry<K, V>> {
     fun get(key: K): V {
         return getValue()[key] ?: throw NoSuchElementException("Key '$key' not found in map!")
     }
@@ -71,4 +71,8 @@ class AtomicMap<K, V>(
 
     val isEmpty: Boolean
         get() = getValue().isEmpty()
+
+    override fun iterator(): Iterator<Map.Entry<K, V>> {
+        return getValue().iterator()
+    }
 }
